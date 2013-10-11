@@ -623,7 +623,7 @@ var KsWikiManager = Class.extend({
       e: {
         press: this.editPage.bind(this),
         description: "Edit the wikipage"
-      }
+      },
     };
   },
 
@@ -641,8 +641,18 @@ var KsWikiEditManager = Class.extend({
       w: {
         press: this.saveForm.bind(this),
         description: "Save the page"
+      },
+      q: { 
+        press: this.preview.bind(this),
+        description: "Preview the page"
       }
     };
+  },
+
+  preview: function() {
+    var preview_url = $("#wiki_form").attr("action")+"/preview";
+    // call redmine fct
+    submitPreview(preview_url, "wiki_form", "preview");
   },
 
   saveForm: function() {
