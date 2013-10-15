@@ -48,7 +48,7 @@ var KsDispatcher = Class.extend({
   init: function() {
     this.ks_managers = []
     this.dialog = null;
-    if ($('table.list').length == 1) {
+    if ($('body.controller-issues.action-index').length == 1) {
       this.ks_managers.push(new KsListManager());
     }
     else if ($('body.controller-issues.action-show').length == 1) {
@@ -89,6 +89,10 @@ var KsDispatcher = Class.extend({
   },
 
   keypress: function(event) {
+    // ignore keypress if CTRL is pressed too
+    if(event.ctrlKey){
+      return false;
+    }
     // ignore keypress in elements
     var element;
     if (event.target) element = event.target;
