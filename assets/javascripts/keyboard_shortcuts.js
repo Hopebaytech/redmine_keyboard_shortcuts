@@ -48,14 +48,20 @@ var KsDispatcher = Class.extend({
   init: function() {
     this.ks_managers = []
     this.dialog = null;
-    if ($('body.controller-issues.action-show').length == 1) {
+    if ($('body.controller-issues.action-index').length == 1) {
+      this.ks_managers.push(new KsListManager());
+    }
+    else if ($('body.controller-issues.action-show').length == 1) {
       this.ks_managers.push(new KsIssueManager());
     }
     else if ($('body.controller-issues.action-bulk_edit').length == 1) {
       this.ks_managers.push(new KsEditManager());
     }
-    else if ($('table.list').length == 1) {
-      this.ks_managers.push(new KsListManager());
+    else if ($('body.controller-wiki.action-show').length == 1){
+      this.ks_managers.push(new KsWikiManager());
+    }
+    else if ($('body.controller-wiki.action-edit').length == 1){
+      this.ks_managers.push(new KsWikiEditManager());
     }
 
     this.ks_managers.push(new KsGlobalManager());
@@ -83,6 +89,10 @@ var KsDispatcher = Class.extend({
   },
 
   keypress: function(event) {
+    // ignore keypress if CTRL is pressed too
+    if(event.ctrlKey){
+      return false;
+    }
     // ignore keypress in elements
     var element;
     if (event.target) element = event.target;
@@ -121,7 +131,7 @@ var KsDispatcher = Class.extend({
 
   go: function(url) {
     if (!url.match(/^http/) && !url.match(/^\//)) {
-      url = '/' + url;
+      url = ks_relative_url_root + url;
     }
     document.location.href = url;
   }
@@ -145,6 +155,10 @@ var KsGlobalManager = Class.extend({
       i: {
         press: this.viewAllIssues.bind(this),
         description: "View all issues for current project"
+      },
+      u: {
+        press: this.viewWiki.bind(this),
+        description: "View wiki of current project"
       },
       h: {
         press: this.viewHelp.bind(this),
@@ -203,6 +217,13 @@ var KsGlobalManager = Class.extend({
     var issues_link = $('.issues');
     if (issues_link.length > 0) {
       ks_dispatcher.go(issues_link.attr('href'));
+    }
+  },
+
+  viewWiki: function() {
+    var wiki_link = $('.wiki');
+    if (wiki_link.length > 0) {
+      ks_dispatcher.go(wiki_link.attr('href'));
     }
   },
 
@@ -475,7 +496,7 @@ var KsIssueManager = Class.extend({
       this.selectIssue(this.current_selected + 1);
     }
     else if(this.next) {
-      ks_dispatcher.go('/issues/' + this.next.id);
+      ks_dispatcher.go('issues/' + this.next.id);
     }
   },
 
@@ -484,7 +505,7 @@ var KsIssueManager = Class.extend({
       this.selectIssue(this.current_selected - 1);
     }
     else if(this.previous) {
-      ks_dispatcher.go('/issues/' + this.previous.id);
+      ks_dispatcher.go('issues/' + this.previous.id);
     }
   },
 
@@ -596,6 +617,52 @@ var KsEditManager = Class.extend({
 
   saveForm: function() {
     $('#bulk_edit_form').submit();
+  }
+});
+
+
+var KsWikiManager = Class.extend({
+
+  init: function() {
+    this.description = "Keyboard Shortcuts for Wiki";
+    this.keys = {
+      e: {
+        press: this.editPage.bind(this),
+        description: "Edit the wikipage"
+      },
+    };
+  },
+
+  editPage: function() {
+    var url = $('div.contextual a.icon-edit').attr("href");
+    ks_dispatcher.go(url);
+  }
+});
+
+var KsWikiEditManager = Class.extend({
+
+  init: function() {
+    this.description = "Keyboard Shortcuts for Wiki Editor";
+    this.keys = {
+      w: {
+        press: this.saveForm.bind(this),
+        description: "Save the page"
+      },
+      q: { 
+        press: this.preview.bind(this),
+        description: "Preview the page"
+      }
+    };
+  },
+
+  preview: function() {
+    var preview_url = $("#wiki_form").attr("action")+"/preview";
+    // call redmine fct
+    submitPreview(preview_url, "wiki_form", "preview");
+  },
+
+  saveForm: function() {
+    $('#wiki_form').submit();
   }
 });
 
