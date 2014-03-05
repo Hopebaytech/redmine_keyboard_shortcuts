@@ -180,7 +180,7 @@ var KsGlobalManager = Class.extend({
       source: function(req, resp) {
         var matches = [];
         $.each(ks_projects, function(i, project) {
-          if (project.project.identifier.indexOf(req.term) !== -1 || project.project.name.indexOf(req.term) !== -1) {
+          if (project.project.identifier.indexOf(req.term) !== -1 || project.project.name.toLowerCase().indexOf(req.term.toLowerCase()) !== -1) {
             matches.push({label: project.project.name, value: project.project.identifier});
           }
         });
