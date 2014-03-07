@@ -201,7 +201,11 @@ var KsGlobalManager = Class.extend({
     var choice = $('#project-selector').val();
     $.each(ks_projects, function(i, project) {
       if (project.project.identifier == choice) {
-        ks_dispatcher.go(choice);
+        if (choice.indexOf("projects/") == 0) {
+          ks_dispatcher.go(choice);
+        } else {
+          ks_dispatcher.go('projects/' + choice);
+        }
       }
     });
   },
