@@ -160,11 +160,16 @@ var KsGlobalManager = Class.extend({
         press: this.viewWiki.bind(this),
         description: "View wiki of current project"
       },
+	  "/": {
+		press: this.changeIssue.bind(this),
+		description: "Switch to specific issue"
+	  },
       h: {
         press: this.viewHelp.bind(this),
         description: "See all available shortcuts",
         allowInDialog: true
       }
+
     };
   },
 
@@ -196,14 +201,38 @@ var KsGlobalManager = Class.extend({
     });
     dialog.fixPosition();
   },
-
-  selectorChange: function() {
-    var choice = $('#project-selector').val();
-    $.each(ks_projects, function(i, project) {
-      if (project.project.identifier == choice) {
-        ks_dispatcher.go('/projects/' + choice);
-      }
+  
+    changeIssue: function(e) {
+    e.preventDefault();
+    var dialog = ks_dispatcher.createDialog();
+    dialog.title.html('Navigate to a different issue');
+	var self = this;
+    form = '<p>Choose an issue:		Press \"Enter\" to Submit</p>';
+    form += '<input type="text" id="issue-selector" size="40" />';
+	
+    dialog.body.append(form);
+   
+    $('#issue-selector').focus();
+    $('#issue-selector').on('keyup', function(e) {
+      if (e.which != 40 && e.which != 38 && e.which == 13) self.selectorChange("issue");
     });
+    dialog.fixPosition();
+  },
+
+  selectorChange: function(issue) {
+	if(issue){
+		var choice = $('#issue-selector').val();
+		if(choice !==""){
+			ks_dispatcher.go('/issues/' + choice);
+		}
+	}else{
+		var choice = $('#project-selector').val();
+		$.each(ks_projects, function(i, project) {
+		  if (project.project.identifier == choice) {
+			ks_dispatcher.go('/projects/' + choice);
+		  }
+		});
+	}
   },
 
   newIssue: function() {
