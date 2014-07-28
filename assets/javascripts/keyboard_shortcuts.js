@@ -131,7 +131,7 @@ var KsDispatcher = Class.extend({
 
   go: function(url) {
     if (!url.match(/^http/) && !url.match(/^\//)) {
-      url = ks_relative_url_root + url;
+      url = "http://" + document.domain + "/" + ks_relative_url_root + url;
     }
     document.location.href = url;
   }
