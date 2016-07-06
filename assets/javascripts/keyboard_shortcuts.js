@@ -201,12 +201,12 @@ var KsGlobalManager = Class.extend({
     });
     dialog.fixPosition();
   },
-  
+    
     changeIssue: function(e) {
     e.preventDefault();
     var dialog = ks_dispatcher.createDialog();
     dialog.title.html('Navigate to a different issue');
-	var self = this;
+	  var self = this;
     form = '<p>Choose an issue:		Press \"Enter\" to Submit</p>';
     form += '<input type="text" id="issue-selector" size="40" />';
 	
